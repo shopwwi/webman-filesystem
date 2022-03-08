@@ -1,104 +1,16 @@
 # 安装
 
 ```
-composer require phcent/webman-filesystem
+composer require shopwwi/webman-filesystem
 ```
-
-在config目录下新建filesystem.php并将下列内容导入
-
-```
-return [
-    'default' => 'local',
-    'storage' => [
-        'local' => [
-            'driver' => \Phcent\WebmanFilesystem\Adapter\LocalAdapterFactory::class,
-            'root' => runtime_path(),
-        ],
-        'ftp' => [
-            'driver' => \Phcent\WebmanFilesystem\Adapter\FtpAdapterFactory::class,
-            'host' => 'ftp.example.com',
-            'username' => 'username',
-            'password' => 'password',
-            // 'port' => 21,
-            // 'root' => '/path/to/root',
-            // 'passive' => true,
-            // 'ssl' => true,
-            // 'timeout' => 30,
-            // 'ignorePassiveAddress' => false,
-            // 'timestampsOnUnixListingsEnabled' => true,
-        ],
-        'memory' => [
-            'driver' => \Phcent\WebmanFilesystem\Adapter\MemoryAdapterFactory::class,
-        ],
-        's3' => [
-            'driver' => \Phcent\WebmanFilesystem\Adapter\S3AdapterFactory::class,
-            'credentials' => [
-                'key' => 'S3_KEY',
-                'secret' => 'S3_SECRET',
-            ],
-            'region' => 'S3_REGION',
-            'version' => 'latest',
-            'bucket_endpoint' => false,
-            'use_path_style_endpoint' => false,
-            'endpoint' => 'S3_ENDPOINT',
-            'bucket_name' => 'S3_BUCKET',
-        ],
-        'minio' => [
-            'driver' => \Phcent\WebmanFilesystem\Adapter\S3AdapterFactory::class,
-            'credentials' => [
-                'key' => 'S3_KEY',
-                'secret' => 'S3_SECRET',
-            ],
-            'region' => 'S3_REGION',
-            'version' => 'latest',
-            'bucket_endpoint' => false,
-            'use_path_style_endpoint' => true,
-            'endpoint' => 'S3_ENDPOINT',
-            'bucket_name' => 'S3_BUCKET',
-        ],
-        'oss' => [
-            'driver' => \Phcent\WebmanFilesystem\Adapter\AliyunOssAdapterFactory::class,
-            'accessId' => 'OSS_ACCESS_ID',
-            'accessSecret' => 'OSS_ACCESS_SECRET',
-            'bucket' => 'OSS_BUCKET',
-            'endpoint' => 'OSS_ENDPOINT',
-            // 'timeout' => 3600,
-            // 'connectTimeout' => 10,
-            // 'isCName' => false,
-            // 'token' => null,
-            // 'proxy' => null,
-        ],
-        'qiniu' => [
-            'driver' => \Phcent\WebmanFilesystem\Adapter\QiniuAdapterFactory::class,
-            'accessKey' => 'QINIU_ACCESS_KEY',
-            'secretKey' => 'QINIU_SECRET_KEY',
-            'bucket' => 'QINIU_BUCKET',
-            'domain' => 'QINBIU_DOMAIN',
-        ],
-        'cos' => [
-            'driver' => \Phcent\WebmanFilesystem\Adapter\CosAdapterFactory::class,
-            'region' => 'COS_REGION',
-            'app_id' => 'COS_APPID',
-            'secret_id' => 'COS_SECRET_ID',
-            'secret_key' => 'COS_SECRET_KEY',
-            // 可选，如果 bucket 为私有访问请打开此项
-            // 'signed_url' => false,
-            'bucket' => 'COS_BUCKET',
-            'read_from_cdn' => false,
-            // 'timeout' => 60,
-            // 'connect_timeout' => 60,
-            // 'cdn' => '',
-            // 'scheme' => 'https',
-        ],
-    ],
-];
+## 使用方法
 ```
 
 
 - 阿里云 OSS 适配器
 
 ```
-composer require phcent/flysystem-oss
+composer require shopwwi/flysystem-oss
 ```
 - S3 适配器
 
@@ -125,7 +37,7 @@ composer require "overtrue/flysystem-cos:^4.0"
 通过FilesystemFactory::get('local') 来调用不同的适配器
 
 ```
-    use Phcent\WebmanFilesystem\FilesystemFactory;
+    use Shopwwi\WebmanFilesystem\FilesystemFactory;
     public function upload(Request $request)
     {
         $file = $request->file('file');
