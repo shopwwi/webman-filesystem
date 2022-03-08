@@ -3,19 +3,19 @@
  *-------------------------------------------------------------------------p*
  *
  *-------------------------------------------------------------------------h*
- * @copyright  Copyright (c) 2015-2021 Phcent Inc. (http://www.phcent.com)
+ * @copyright  Copyright (c) 2015-2022 Shopwwi Inc. (http://www.shopwwi.com)
  *-------------------------------------------------------------------------c*
- * @license    http://www.phcent.com        p h c e n t . c o m
+ * @license    http://www.shopwwi.com        s h o p w w i . c o m
  *-------------------------------------------------------------------------e*
- * @link       http://www.phcent.com
+ * @link       http://www.shopwwi.com by 象讯科技 phcent.com
  *-------------------------------------------------------------------------n*
- * @since      8988354@qq.com
+ * @since      shopwwi象讯·PHP商城系统Pro
  *-------------------------------------------------------------------------t*
  */
-namespace Phcent\WebmanFilesystem;
+namespace Shopwwi\WebmanFilesystem;
 
-use Phcent\WebmanFilesystem\Adapter\LocalAdapterFactory;
-use Phcent\WebmanFilesystem\Contract\AdapterFactoryInterface;
+use Shopwwi\WebmanFilesystem\Adapter\LocalAdapterFactory;
+use Shopwwi\WebmanFilesystem\Contract\AdapterFactoryInterface;
 use League\Flysystem\Config;
 use League\Flysystem\Filesystem;
 use Psr\Container\ContainerInterface;
