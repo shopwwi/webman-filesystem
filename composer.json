@@ -1,0 +1,28 @@
+{
+  "name": "shopwwi/webman-filesystem",
+  "description": "Flysystem V2 adapter for the webman",
+  "keywords": ["webman", "filesystem", "oss","cos","qiniu"],
+  "type": "library",
+  "require": {
+    "php": ">=7.2",
+    "league/flysystem": "^2.3"
+  },
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Shopwwi\\WebmanFilesystem\\": "src/"
+    }
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.x-dev"
+    }
+  },
+  "minimum-stability": "dev",
+  "authors": [
+    {
+      "name": "Tycoon Song",
+      "email": "8988354@qq.com"
+    }
+  ]
+}
