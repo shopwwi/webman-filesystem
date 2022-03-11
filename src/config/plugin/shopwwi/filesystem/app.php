@@ -14,6 +14,7 @@
  */
 
 return [
+     'enable' => true,
     'default' => 'local',
     'storage' => [
         'local' => [
