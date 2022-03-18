@@ -106,7 +106,11 @@ composer require "overtrue/flysystem-cos:^4.0"
             $e->getMessage();
          }
          
-         
+         //获取文件外网
+         $filesName = 'storage/a4bab140776e0c1d57cc316266e1ca05.png';
+         $fileUrl = Storage::url($filesName);
+         //指定选定器外网
+         $fileUrl = Storage::adapter('oss')->url($filesName);
     }
     
 ```

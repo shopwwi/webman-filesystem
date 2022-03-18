@@ -1,5 +1,6 @@
 <?php
-namespace Shopwwi\WebmanFilesystem\Facede;
+declare (strict_types = 1);
+namespace Shopwwi\WebmanFilesystem\Facade;
 /**
  * @see \Shopwwi\WebmanFilesystem\Storage
  * @mixin \Shopwwi\WebmanFilesystem\Storage
