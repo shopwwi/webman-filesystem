@@ -2,6 +2,7 @@
 
 namespace Shopwwi\WebmanFilesystem;
 
+use Closure;
 use support\Request;
 
 class Storage
@@ -106,13 +107,14 @@ class Storage
      * 上传文件
      * @param $file
      * @return void
+     * @throws \Exception
      */
     public function upload($file)
     {
-        if(!in_array($file->getUploadMineType(),$this->extYes)) {
+        if(!empty($this->extYes) && !in_array($file->getUploadMineType(),$this->extYes)) {
             throw new \Exception('不允许上传文件类型'.$file->getUploadMineType());
         }
-        if(in_array($file->getUploadMineType(),$this->extNo)) {
+        if(!empty($this->extNo) &&in_array($file->getUploadMineType(),$this->extNo)) {
             throw new \Exception('文件类型不被允许'.$file->getUploadMineType());
         }
         if($file->getSize() > $this->size){
@@ -148,7 +150,10 @@ class Storage
     /**
      * 批量上传文件
      * @param $files
+     * @param int $num
+     * @param int $size
      * @return void
+     * @throws \Exception
      */
     public function uploads($files,$num = 0, $size = 0)
     {
@@ -166,10 +171,10 @@ class Storage
             }
         }
         foreach ($files as $key => $file) {
-            if(!in_array($file->getUploadMineType(),$this->extYes)) {
+            if(!empty($this->extYes) && !in_array($file->getUploadMineType(),$this->extYes)) {
                 throw new \Exception('不允许上传文件类型'.$file->getUploadMineType());
             }
-            if(in_array($file->getUploadMineType(),$this->extNo)) {
+            if(!empty($this->extNo) &&in_array($file->getUploadMineType(),$this->extNo)) {
                 throw new \Exception('文件类型不被允许'.$file->getUploadMineType());
             }
             if($file->getSize() > $this->size){
