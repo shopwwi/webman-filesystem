@@ -64,7 +64,7 @@ class Storage
      * @param string $name
      * @return $this
      */
-    public function path(string $name)
+    public function path(string $name) :Storage
     {
         $this->path = $name;
         return $this;

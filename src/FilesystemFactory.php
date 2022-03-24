@@ -37,12 +37,13 @@ class FilesystemFactory
     }
     public static function get($adapterName): Filesystem
     {
-        $options = \config('plugin.shopwwi.filesystem.app.filesystem', [
+        $options = \config('plugin.shopwwi.filesystem.app', [
             'default' => 'local',
             'storage' => [
                 'local' => [
                     'driver' => LocalAdapterFactory::class,
                     'root' => \runtime_path(),
+                    'url' => '',
                 ],
             ],
         ]);

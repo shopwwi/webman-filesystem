@@ -25,7 +25,7 @@ class Install
      * @var array
      */
     protected static $pathRelation = array (
-        'config/plugin/shopwwi/filesystem' => 'config/plugin/shopwwi/filesystem',
+        'config/plugin/shopwwi/filesystem' => 'config/plugin/shopwwi/filesystem'
     );
 
     /**
