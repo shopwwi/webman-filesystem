@@ -86,12 +86,16 @@ composer require "overtrue/flysystem-cos:^4.0"
 ```php
     use Shopwwi\WebmanFilesystem\Facade\Storage;
     public function upload(\support\Request $request){
+         // 适配器 local默认是存储在runtime目录下 public默认是存储在public目录下
+         // 可访问的静态文件建议public
+         // 默认适配器是local
+         Storage::adapter('public');
         //单文件上传
         $file = $request->file('file');
         $result = Storage::upload($file);
         //单文件判断
         try {
-            $result = Storage::adapter('local')->path('upload/user')->size(1024*1024*5)->extYes(['image/jpeg','image/gif'])->extNo(['image/png'])->upload($file);
+            $result = Storage::adapter('public')->path('storage/upload/user')->size(1024*1024*5)->extYes(['image/jpeg','image/gif'])->extNo(['image/png'])->upload($file);
          }catch (\Exception $e){
             $e->getMessage();
          }
@@ -101,7 +105,7 @@ composer require "overtrue/flysystem-cos:^4.0"
          $result = Storage::uploads($files);
          try {
          //uploads 第二个参数为限制文件数量 比如设置为10 则只允许上传10个文件 第三个参数为允许上传总大小 则本列表中文件总大小不得超过设定
-            $result = Storage::adapter('local')->path('upload/user')->size(1024*1024*5)->extYes(['image/jpeg','image/gif'])->extNo(['image/png'])->uploads($files,10,1024*1024*100);
+            $result = Storage::adapter('public')->path('storage/upload/user')->size(1024*1024*5)->extYes(['image/jpeg','image/gif'])->extNo(['image/png'])->uploads($files,10,1024*1024*100);
          }catch (\Exception $e){
             $e->getMessage();
          }
@@ -114,6 +118,7 @@ composer require "overtrue/flysystem-cos:^4.0"
     }
     
 ```
+
 ###静态方法（可单独设定）
 
 | 方法      | 描述            | 默认                 |
