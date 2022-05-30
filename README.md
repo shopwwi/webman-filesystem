@@ -1,3 +1,8 @@
+<p align="center">
+<a href="https://packagist.org/packages/shopwwi/webman-filesystem"><img src="https://poser.pugx.org/shopwwi/webman-filesystem/v/stable.svg" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/shopwwi/webman-filesystem"><img src="https://poser.pugx.org/shopwwi/webman-filesystem/d/total.svg" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/shopwwi/webman-filesystem"><img src="https://poser.pugx.org/shopwwi/webman-filesystem/license.svg" alt="License"></a>
+</p>
 # 安装
 
 ```
