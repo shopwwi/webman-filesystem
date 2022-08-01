@@ -13,7 +13,7 @@ composer require shopwwi/webman-filesystem
 - 阿里云 OSS 适配器
 
 ```
-composer require shopwwi/flysystem-oss
+composer require shopwwi/filesystem-oss
 ```
 
 - S3 适配器
