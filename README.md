@@ -19,7 +19,7 @@ composer require shopwwi/filesystem-oss
 - S3 适配器
 
 ```
-composer require "league/flysystem-aws-s3-v3:^2.0"
+composer require "league/flysystem-aws-s3-v3:^3.0"
 ```
 - 七牛云适配器(php7.X)
 
@@ -34,7 +34,7 @@ composer require "overtrue/flysystem-qiniu:^3.0"
 - 内存适配器
 
 ```
-composer require "league/flysystem-memory:^2.0"
+composer require "league/flysystem-memory:^3.0"
 ```
 - 腾讯云 COS 适配器(7.x)
 
