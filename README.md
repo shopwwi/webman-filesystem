@@ -1,8 +1,5 @@
-<p align="center">
-<a href="https://packagist.org/packages/shopwwi/webman-filesystem"><img src="https://poser.pugx.org/shopwwi/webman-filesystem/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/shopwwi/webman-filesystem"><img src="https://poser.pugx.org/shopwwi/webman-filesystem/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/shopwwi/webman-filesystem"><img src="https://poser.pugx.org/shopwwi/webman-filesystem/license.svg" alt="License"></a>
-</p>
+[!['Build Status'](https://travis-ci.org/shopwwi/webman-filesystem.svg?branch=main)](https://github.com/shopwwi/webman-filesystem) [!['Latest Stable Version'](https://poser.pugx.org/shopwwi/webman-filesystem/v/stable.svg)](https://packagist.org/packages/shopwwi/webman-filesystem) [!['Total Downloads'](https://poser.pugx.org/shopwwi/webman-filesystem/d/total.svg)](https://packagist.org/packages/shopwwi/webman-filesystem) [!['License'](https://poser.pugx.org/shopwwi/webman-filesystem/license.svg)](https://packagist.org/packages/shopwwi/webman-filesystem)
+
 # 安装
 
 ```
@@ -36,13 +33,13 @@ composer require "overtrue/flysystem-qiniu:^3.0"
 ```
 composer require "league/flysystem-memory:^3.0"
 ```
-- 腾讯云 COS 适配器(7.x)
+- 腾讯云 COS 适配器(php7.x)
 
 ```
 composer require "overtrue/flysystem-cos:^4.0"
 ```
 
-- 腾讯云 COS 适配器(8.x)
+- 腾讯云 COS 适配器(php8.x)
 
 ```
 composer require "overtrue/flysystem-cos:^5.0"
@@ -122,6 +119,16 @@ composer require "overtrue/flysystem-cos:^5.0"
          try {
          //uploads 第二个参数为限制文件数量 比如设置为10 则只允许上传10个文件 第三个参数为允许上传总大小 则本列表中文件总大小不得超过设定
             $result = Storage::adapter('public')->path('storage/upload/user')->size(1024*1024*5)->extYes(['image/jpeg','image/gif'])->extNo(['image/png'])->uploads($files,10,1024*1024*100);
+         }catch (\Exception $e){
+            $e->getMessage();
+         }
+         
+        // 原文件覆盖上传(路径也需要保持一致哦)
+        try {
+            $files = $request->file();
+            $fileName = 'storage/upload/user/15f0c8f53cf1b23234313851c7a30020.png'; // 文件名中如此带了路径 则下面的path无效
+            $ext = true; // 文件尾缀是否替换 开启后则$files上传的任意图片 都会转换为$fileName尾缀（示例: .png），默认false
+            $result = Storage::adapter('public')->path('storage/upload/user')->size(1024*1024*5)->extYes(['image/jpeg','image/gif'])->extNo(['image/png'])->upload($file,$fileName,$ext);
          }catch (\Exception $e){
             $e->getMessage();
          }

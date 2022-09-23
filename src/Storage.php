@@ -148,6 +148,60 @@ class Storage
     }
 
     /**
+     * 原文件覆盖
+     * @param $file
+     * @param $storageKey
+     * @return mixed
+     * @throws \League\Flysystem\FilesystemException
+     */
+    public function reUpload($file,$fileName,$ext = false)
+    {
+        if(!empty($this->extYes) && !in_array($file->getUploadMineType(),$this->extYes)) {
+            throw new \Exception('不允许上传文件类型'.$file->getUploadMineType());
+        }
+        if(!empty($this->extNo) &&in_array($file->getUploadMineType(),$this->extNo)) {
+            throw new \Exception('文件类型不被允许'.$file->getUploadMineType());
+        }
+        if($file->getSize() > $this->size){
+            throw new \Exception("上传文件过大（当前大小 {$file->getSize()}，需小于 {$this->size})");
+        }
+        $filesystem = FilesystemFactory::get($this->adapterType);
+        $first = strrpos($fileName,'/');
+        if($first === false){
+            $path = $this->path;
+            $keyAndExt = explode('.',substr($fileName,0,strlen($fileName)));
+        }else{
+            $path = substr($fileName,0,$first);
+            $keyAndExt = explode('.',substr($fileName,$first + 1,strlen($fileName)));
+        }
+        $storageKey = $keyAndExt[0] ?? \hash_file('md5', $file->getPathname());
+
+        $fileName = $path.'/'.$storageKey.'.'.($ext?$keyAndExt[1]:$file->getUploadExtension());
+
+        $stream = \fopen($file->getRealPath(), 'r+');
+        $filesystem->writeStream(
+            $fileName,
+            $stream
+        );
+        \fclose($stream);
+        $info = [
+            'origin_name' => $file->getUploadName(),
+            'file_name' => $fileName,
+            'storage_key' => $storageKey,
+            'file_url' => $this->url($fileName),
+            'size' => $file->getSize(),
+            'mime_type' => $file->getUploadMineType(),
+            'extension' => $file->getUploadExtension(),
+        ];
+        if (\substr($file->getUploadMineType(), 0, 5) == 'image') {
+            $size = \getimagesize($file);
+            $info['file_height'] = $size[1];
+            $info['file_width'] = $size[0];
+        }
+        return \json_decode(\json_encode($info));
+    }
+
+    /**
      * 批量上传文件
      * @param $files
      * @param int $num
@@ -222,23 +276,5 @@ class Storage
             $domain = '//'.\request()->host();
         }
         return $domain.'/'.$fileName;
-    }
-    
-    /**
-     * 动态方法 直接调用is方法进行验证
-     * @access public
-     * @param string $method 方法名
-     * @param array $args   调用参数
-     * @return bool
-     */
-    public function __call(string $method, array $args)
-    {
-        if ('is' == \strtolower(substr($method, 0, 2))) {
-            $method = \substr($method, 2);
-        }
-
-        $args[] = \lcfirst($method);
-
-        return \call_user_func_array([$this, 'is'], $args);
     }
 }
