@@ -95,7 +95,9 @@ composer require "overtrue/flysystem-cos:^5.0"
 ```
 
 # 便捷式上传
-
+- 支持base64图片上传
+- 支持设定重复文件上传及文件覆盖
+- 支持指定文件名上传及文件覆盖
 ```php
     use Shopwwi\WebmanFilesystem\Facade\Storage;
     public function upload(\support\Request $request){
@@ -105,7 +107,8 @@ composer require "overtrue/flysystem-cos:^5.0"
          Storage::adapter('public');
         //单文件上传
         $file = $request->file('file');
-        $result = Storage::upload($file);
+        // 上传第二参数默认为true即允许相同文件的上传 为false时将会覆盖原文件
+        $result = Storage::upload($file,false);
         //单文件判断
         try {
             $result = Storage::adapter('public')->path('storage/upload/user')->size(1024*1024*5)->extYes(['image/jpeg','image/gif'])->extNo(['image/png'])->upload($file);
@@ -117,18 +120,26 @@ composer require "overtrue/flysystem-cos:^5.0"
          $files = $request->file();
          $result = Storage::uploads($files);
          try {
-         //uploads 第二个参数为限制文件数量 比如设置为10 则只允许上传10个文件 第三个参数为允许上传总大小 则本列表中文件总大小不得超过设定
+         //uploads 第二个参数为限制文件数量 比如设置为10 则只允许上传10个文件 第三个参数为允许上传总大小 则本列表中文件总大小不得超过设定 第四参数默认为true即允许同文件上传 false则为覆盖同文件
             $result = Storage::adapter('public')->path('storage/upload/user')->size(1024*1024*5)->extYes(['image/jpeg','image/gif'])->extNo(['image/png'])->uploads($files,10,1024*1024*100);
          }catch (\Exception $e){
             $e->getMessage();
          }
          
-        // 原文件覆盖上传(路径也需要保持一致哦)
+        // 指定文件名上传(同文件将被覆盖)
         try {
             $files = $request->file();
-            $fileName = 'storage/upload/user/15f0c8f53cf1b23234313851c7a30020.png'; // 文件名中如此带了路径 则下面的path无效
+            $fileName = 'storage/upload/user/1.png'; // 文件名中如此带了路径 则下面的path无效 未带路径1.png效果相等
             $ext = true; // 文件尾缀是否替换 开启后则$files上传的任意图片 都会转换为$fileName尾缀（示例: .png），默认false
-            $result = Storage::adapter('public')->path('storage/upload/user')->size(1024*1024*5)->extYes(['image/jpeg','image/gif'])->extNo(['image/png'])->upload($file,$fileName,$ext);
+            $result = Storage::adapter('public')->path('storage/upload/user')->size(1024*1024*5)->extYes(['image/jpeg','image/gif'])->extNo(['image/png'])->reUpload($file,$fileName,$ext);
+         }catch (\Exception $e){
+            $e->getMessage();
+         }
+         
+        // base64图片上传
+        try {
+            $files = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAcIAAAHCCAYAAAB8GMlFAAAAAXNSR0IArs4c6QAAAARnQU1BAACx...";
+            $result = Storage::adapter('public')->path('storage/upload/user')->size(1024*1024*5)->extYes(['image/jpeg','image/gif'])->extNo(['image/png'])->base64Upload($files);
          }catch (\Exception $e){
             $e->getMessage();
          }
