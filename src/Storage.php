@@ -244,13 +244,15 @@ class Storage
      */
     public function base64Upload($baseImg)
     {
-        $baseImg = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAcIAAAHCCAYAAAB8GMlFAAAAAXNSR0IArs4c6QAAAARnQU1BAACx...";
-        if($size = getimagesize($baseImg)){
-            throw new \Exception('图片格式错误');
-        }
+
         preg_match('/^(data:\s*image\/(\w+);base64,)/',$baseImg,$res);
-        if(!$res){
+        if(count($res) != 3){
            throw new \Exception('格式错误');
+        }
+        $img = base64_decode(str_replace($res[1],'', $baseImg));
+        $size = getimagesizefromstring($img);
+        if(count($size) == 0){
+            throw new \Exception('图片格式不正确');
         }
         if(!empty($this->extYes) && !in_array($size['mime'],$this->extYes)) {
             throw new \Exception('不允许上传文件类型'.$size['mime']);
@@ -258,7 +260,7 @@ class Storage
         if(!empty($this->extNo) &&in_array($size['mime'],$this->extNo)) {
             throw new \Exception('文件类型不被允许'.$size['mime']);
         }
-        $img = base64_decode(str_replace($res[1],'', $baseImg));
+
         $filesystem = FilesystemFactory::get($this->adapterType);
         $storageKey = md5(uniqid());
         $fileName = $this->path.'/'.$storageKey.'.'.$res[2];
