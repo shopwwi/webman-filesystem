@@ -32,7 +32,7 @@ class Storage
     {
         $this->config = config('plugin.shopwwi.filesystem.app');
         $this->adapterType = $this->config['default'] ?? 'local';
-        $this->size = $this->config['size'] ?? 1024 * 1024 * 10;
+        $this->size = $this->config['max_size'] ?? 1024 * 1024 * 10;
         $this->extYes = $this->config['ext_yes'] ?? [];
         $this->extNo = $this->config['ext_no'] ?? [];
         if (!empty(static::$maker)) {
