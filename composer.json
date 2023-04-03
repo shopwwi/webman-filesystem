@@ -5,7 +5,7 @@
   "type": "library",
   "require": {
     "php": ">=7.2",
-    "league/flysystem": "^2.3"
+    "league/flysystem": "^2.3|^3.0"
   },
   "license": "MIT",
   "autoload": {
