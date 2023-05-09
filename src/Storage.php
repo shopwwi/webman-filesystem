@@ -299,8 +299,10 @@ class Storage
      */
     public function url(string $fileName)
     {
+        $url = parse_url($fileName);
+        if(isset($url['host'])) return $fileName;
         $domain = $this->config['storage'][$this->adapterType]['url'];
-        if(empty($this->config['storage'][$this->adapterType]['url'])){
+        if(empty($domain)){
             $domain = '//'.\request()->host();
         }
         return $domain.'/'.$fileName;
