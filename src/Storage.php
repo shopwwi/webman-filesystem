@@ -111,20 +111,12 @@ class Storage
     /**
      * 上传文件
      * @param $file
-     * @return void
      * @throws \Exception
      */
     public function upload($file,$same = true)
     {
-        if(!empty($this->extYes) && !in_array($file->getUploadMineType(),$this->extYes)) {
-            throw new \Exception('不允许上传文件类型'.$file->getUploadMineType());
-        }
-        if(!empty($this->extNo) &&in_array($file->getUploadMineType(),$this->extNo)) {
-            throw new \Exception('文件类型不被允许'.$file->getUploadMineType());
-        }
-        if($file->getSize() > $this->size){
-            throw new \Exception("上传文件过大（当前大小 {$file->getSize()}，需小于 {$this->size})");
-        }
+        $this->verifyFile($file); // 验证附件
+
         $filesystem = FilesystemFactory::get($this->adapterType);
         $storageKey = $this->hash($file->getPathname());
         if($same){
@@ -135,8 +127,6 @@ class Storage
             }
         }
         $result = $this->putFileAs($this->path, $file, $storageKey.'.'.$file->getUploadExtension());
-
-
         if($result){
             $info = [
                 'adapter' => $this->adapterType,
@@ -159,23 +149,16 @@ class Storage
     }
 
     /**
-     * 原文件覆盖
+     * 原文件覆盖上传
      * @param $file
-     * @param $storageKey
-     * @return mixed
-     * @throws \League\Flysystem\FilesystemException
+     * @param $fileName
+     * @param $ext
+     * @throws \Throwable
      */
     public function reUpload($file,$fileName,$ext = false)
     {
-        if(!empty($this->extYes) && !in_array($file->getUploadMineType(),$this->extYes)) {
-            throw new \Exception('不允许上传文件类型'.$file->getUploadMineType());
-        }
-        if(!empty($this->extNo) &&in_array($file->getUploadMineType(),$this->extNo)) {
-            throw new \Exception('文件类型不被允许'.$file->getUploadMineType());
-        }
-        if($file->getSize() > $this->size){
-            throw new \Exception("上传文件过大（当前大小 {$file->getSize()}，需小于 {$this->size})");
-        }
+        $this->verifyFile($file); // 验证附件
+
         $filesystem = FilesystemFactory::get($this->adapterType);
         $first = strrpos($fileName,'/');
         if($first === false){
@@ -191,21 +174,23 @@ class Storage
             $filesystem->delete($fileName);
         }
         $result = $this->putFileAs($this->path, $file, $storageKey.'.'.($ext?$keyAndExt[1]:$file->getUploadExtension()));
-        $info = [
-            'origin_name' => $file->getUploadName(),
-            'file_name' => $fileName,
-            'storage_key' => $storageKey,
-            'file_url' => $this->url($fileName),
-            'size' => $file->getSize(),
-            'mime_type' => $file->getUploadMineType(),
-            'extension' => $file->getUploadExtension(),
-        ];
-        if (\substr($file->getUploadMineType(), 0, 5) == 'image') {
-            $size = \getimagesize($file);
-            $info['file_height'] = $size[1];
-            $info['file_width'] = $size[0];
+        if($result) {
+            $info = [
+                'origin_name' => $file->getUploadName(),
+                'file_name' => $result,
+                'storage_key' => $storageKey,
+                'file_url' => $this->url($result),
+                'size' => $file->getSize(),
+                'mime_type' => $file->getUploadMineType(),
+                'extension' => $file->getUploadExtension(),
+            ];
+            if (\substr($file->getUploadMineType(), 0, 5) == 'image') {
+                $size = \getimagesize($file);
+                $info['file_height'] = $size[1];
+                $info['file_width'] = $size[0];
+            }
+            return \json_decode(\json_encode($info));
         }
-        return \json_decode(\json_encode($info));
     }
 
     /**
@@ -213,7 +198,6 @@ class Storage
      * @param $files
      * @param int $num
      * @param int $size
-     * @return void
      * @throws \Exception
      */
     public function uploads($files,$num = 0, $size = 0,$same = true)
@@ -239,8 +223,9 @@ class Storage
     }
 
     /**
-     *
-     * @param $file
+     * base64图片上传
+     * @param $baseImg
+     * @throws \Throwable
      */
     public function base64Upload($baseImg)
     {
@@ -261,11 +246,10 @@ class Storage
             throw new \Exception('文件类型不被允许'.$size['mime']);
         }
 
-        $filesystem = FilesystemFactory::get($this->adapterType);
         $storageKey = md5(uniqid());
         $fileName = $this->path.'/'.$storageKey.'.'.$res[2];
         $base_img = str_replace($res[1], '', $baseImg);
-        $base_img = str_replace('=','',$baseImg);
+        $base_img = str_replace('=','',$base_img);
         $img_len = strlen($base_img);
         $file_size = intval($img_len - ($img_len/8)*2);
 
@@ -290,6 +274,72 @@ class Storage
         ];
 
         return \json_decode(\json_encode($info));
+    }
+
+    /**
+     * 压缩上传图片
+     * @param $file
+     * @param $processFunction
+     * @param $same
+     * @throws \Throwable
+     */
+    public function processUpload($file,$processFunction = null,$same = true){
+
+        $this->verifyFile($file); // 验证附件
+
+        if (!class_exists(\Intervention\Image\ImageManagerStatic::class)) {
+            throw new \Exception('图片处理器未安装');
+        }
+
+        $image = \Intervention\Image\ImageManagerStatic::make($file);
+        if(is_callable($processFunction)){
+            $image = $processFunction($image);
+        }
+
+        $filesystem = FilesystemFactory::get($this->adapterType);
+        $storageKey = $this->hash($file->getPathname());
+        if($same){
+            $storageKey = $this->hash($file->getPathname()).'_'.uniqid();
+        }else{
+            if($filesystem->fileExists(trim($this->path.'/'.$storageKey.'.'.$file->getUploadExtension(), '/'))){
+                $filesystem->delete(trim($this->path.'/'.$storageKey.'.'.$file->getUploadExtension(), '/'));
+            }
+        }
+        $name = $storageKey.'.'.$file->getUploadExtension();
+        $result = $this->put($path = trim($this->path.'/'.$name, '/'), $image->stream());
+
+        if($result){
+            $info = [
+                'adapter' => $this->adapterType,
+                'origin_name' => $file->getUploadName(),
+                'file_name' => $path,
+                'storage_key' => $storageKey,
+                'file_url' => $this->url($path),
+                'size' => $image->filesize(),
+                'mime_type' => $file->getUploadMineType(),
+                'extension' => $file->getUploadExtension(),
+                'file_height' => $image->height(),
+                'file_width' => $image->width()
+            ];
+            return \json_decode(\json_encode($info));
+        }
+    }
+
+    /**
+     * 文件验证
+     * @param $file
+     * @throws \Exception
+     */
+    protected function verifyFile($file){
+        if(!empty($this->extYes) && !in_array($file->getUploadMineType(),$this->extYes)) {
+            throw new \Exception('不允许上传文件类型'.$file->getUploadMineType());
+        }
+        if(!empty($this->extNo) &&in_array($file->getUploadMineType(),$this->extNo)) {
+            throw new \Exception('文件类型不被允许'.$file->getUploadMineType());
+        }
+        if($file->getSize() > $this->size){
+            throw new \Exception("上传文件过大（当前大小 {$file->getSize()}，需小于 {$this->size})");
+        }
     }
 
     /**

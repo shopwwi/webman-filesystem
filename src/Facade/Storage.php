@@ -12,6 +12,8 @@ namespace Shopwwi\WebmanFilesystem\Facade;
  * @method url(string $fileName) static 获取文件访问地址 
  * @method upload(string $file) static 上传文件
  * @method uploads(string $files,$num = 0, $size = 0) static 批量上传文件
+ * @method base64Upload($baseImg)  static base64文件上传
+ * @method processUpload($file,$processFunction = null,$same = true) static 处理图片上传
  */
 class Storage
 {

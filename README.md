@@ -1,5 +1,8 @@
 [!['Build Status'](https://travis-ci.org/shopwwi/webman-filesystem.svg?branch=main)](https://github.com/shopwwi/webman-filesystem) [!['Latest Stable Version'](https://poser.pugx.org/shopwwi/webman-filesystem/v/stable.svg)](https://packagist.org/packages/shopwwi/webman-filesystem) [!['Total Downloads'](https://poser.pugx.org/shopwwi/webman-filesystem/d/total.svg)](https://packagist.org/packages/shopwwi/webman-filesystem) [!['License'](https://poser.pugx.org/shopwwi/webman-filesystem/license.svg)](https://packagist.org/packages/shopwwi/webman-filesystem)
 
+* 如果觉得方便了你，给个小星星鼓励一下吧
+* 如果你遇到问题 可以给我发邮件 8988354@qq.com
+
 # 安装
 
 ```
@@ -98,6 +101,8 @@ composer require "overtrue/flysystem-cos:^5.0"
 - 支持base64图片上传
 - 支持设定重复文件上传及文件覆盖
 - 支持指定文件名上传及文件覆盖
+- 新增图片处理器上传 （附加于强大的海报生成/图片压缩/水印等）
+-
 ```php
     use Shopwwi\WebmanFilesystem\Facade\Storage;
     public function upload(\support\Request $request){
@@ -144,6 +149,24 @@ composer require "overtrue/flysystem-cos:^5.0"
             $e->getMessage();
          }
          
+        // 强大的图片处理 你甚至可以创建画报直接保存
+        // 在使用前 请确保你安装了 composer require intervention/image
+        try {
+            $files = $request->file();
+            $fileName = 'storage/upload/user/1.png'; // 文件名中如此带了路径 则下面的path无效 未带路径1.png效果相等
+            $ext = true; // 文件尾缀是否替换 开启后则$files上传的任意图片 都会转换为$fileName尾缀（示例: .png），默认false
+            $result = Storage::adapter('public')->path('storage/upload/user')->size(1024*1024*5)->extYes(['image/jpeg','image/gif'])->extNo(['image/png'])->processUpload($file,function ($image){
+                // 图片大小更改 resize()
+                $image->resize(100,50)
+                // 在图片上增加水印 insert()
+                $image->insert('xxx/watermark.png','bottom-right',15,10)
+                // 当然你可以使用intervention/image 中的任何功能 最终都会上传在你的storage库中
+                return $image
+            },$ext);
+         }catch (\Exception $e){
+            $e->getMessage();
+         }
+         
          //获取文件外网
          $filesName = 'storage/a4bab140776e0c1d57cc316266e1ca05.png';
          $fileUrl = Storage::url($filesName);
@@ -153,7 +176,7 @@ composer require "overtrue/flysystem-cos:^5.0"
     
 ```
 
-###静态方法（可单独设定）
+### 静态方法（可单独设定）
 
 | 方法      | 描述            | 默认                 |
 |---------|---------------|--------------------|
