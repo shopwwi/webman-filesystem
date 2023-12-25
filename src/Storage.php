@@ -150,8 +150,8 @@ class Storage
             ];
             if (\substr($file->getUploadMineType(), 0, 5) == 'image') {
                 $size = \getimagesize($file);
-                $info['file_height'] = $size[1];
-                $info['file_width'] = $size[0];
+                $info['file_height'] = $size[1] ?? 0;
+                $info['file_width'] = $size[0] ?? 0;
             }
             return \json_decode(\json_encode($info));
         }
@@ -196,8 +196,8 @@ class Storage
             ];
             if (\substr($file->getUploadMineType(), 0, 5) == 'image') {
                 $size = \getimagesize($file);
-                $info['file_height'] = $size[1];
-                $info['file_width'] = $size[0];
+                $info['file_height'] = $size[1] ?? 0;
+                $info['file_width'] = $size[0] ?? 0;
             }
             return \json_decode(\json_encode($info));
         }
@@ -279,8 +279,8 @@ class Storage
             'size' => $file_size,
             'mime_type' => $size['mime'],
             'extension' => $res[2],
-            'file_height' => $size[1],
-            'file_width' => $size[0]
+            'file_height' => $size[1] ?? 0,
+            'file_width' => $size[0] ?? 0
         ];
 
         return \json_decode(\json_encode($info));
