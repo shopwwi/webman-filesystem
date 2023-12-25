@@ -43,6 +43,16 @@ class Storage
     }
 
     /**
+     * 注入配置文件
+     * @param $config
+     * @return $this
+     */
+    public function setConfig($config){
+        $this->config = $config;
+        return $this;
+    }
+
+    /**
      * 设置服务注入
      * @access public
      * @param Closure $maker
