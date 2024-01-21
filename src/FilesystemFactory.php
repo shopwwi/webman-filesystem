@@ -35,9 +35,9 @@ class FilesystemFactory
     {
         return static::$_instance;
     }
-    public static function get($adapterName): Filesystem
+    public static function get($adapterName,$config = null): Filesystem
     {
-        $options = \config('plugin.shopwwi.filesystem.app', [
+        $options = $config == null ? \config('plugin.shopwwi.filesystem.app', [
             'default' => 'local',
             'storage' => [
                 'local' => [
@@ -46,7 +46,7 @@ class FilesystemFactory
                     'url' => '',
                 ],
             ],
-        ]);
+        ]) : $config;
         $adapter = static::getAdapter($options, $adapterName);
 
         return new Filesystem($adapter, $options['storage'][$adapterName] ?? []);

@@ -28,9 +28,9 @@ class Storage
      * 构造方法
      * @access public
      */
-    public function __construct()
+    public function __construct($config = null)
     {
-        $this->config = config('plugin.shopwwi.filesystem.app');
+        $this->config = $config != null ? $config : config('plugin.shopwwi.filesystem.app');
         $this->adapterType = $this->config['default'] ?? 'local';
         $this->size = $this->config['max_size'] ?? 1024 * 1024 * 10;
         $this->extYes = $this->config['ext_yes'] ?? [];
@@ -127,7 +127,7 @@ class Storage
     {
         $this->verifyFile($file); // 验证附件
 
-        $filesystem = FilesystemFactory::get($this->adapterType);
+        $filesystem = FilesystemFactory::get($this->adapterType,$this->config);
         $storageKey = $this->hash($file->getPathname());
         if($same){
             $storageKey = $this->hash($file->getPathname()).'_'.uniqid();
@@ -169,7 +169,7 @@ class Storage
     {
         $this->verifyFile($file); // 验证附件
 
-        $filesystem = FilesystemFactory::get($this->adapterType);
+        $filesystem = FilesystemFactory::get($this->adapterType,$this->config);
         $first = strrpos($fileName,'/');
         if($first === false){
             $path = $this->path;
@@ -306,7 +306,7 @@ class Storage
             $image = $processFunction($image);
         }
 
-        $filesystem = FilesystemFactory::get($this->adapterType);
+        $filesystem = FilesystemFactory::get($this->adapterType,$this->config);
         $storageKey = $this->hash($file->getPathname());
         if($same){
             $storageKey = $this->hash($file->getPathname()).'_'.uniqid();
@@ -456,12 +456,12 @@ class Storage
 
         try {
             if ($contents instanceof StreamInterface) {
-                FilesystemFactory::get($this->adapterType)->writeStream($path, $contents->detach(), $options);
+                FilesystemFactory::get($this->adapterType,$this->config)->writeStream($path, $contents->detach(), $options);
                 return true;
             }
             is_resource($contents)
-                ? FilesystemFactory::get($this->adapterType)->writeStream($path, $contents, $options)
-                : FilesystemFactory::get($this->adapterType)->write($path, $contents, $options);
+                ? FilesystemFactory::get($this->adapterType,$this->config)->writeStream($path, $contents, $options)
+                : FilesystemFactory::get($this->adapterType,$this->config)->write($path, $contents, $options);
         } catch (UnableToWriteFile | UnableToSetVisibility $e) {
             throw_if($this->throwsExceptions(), $e);
 
