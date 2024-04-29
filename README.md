@@ -101,8 +101,8 @@ composer require "overtrue/flysystem-cos:^5.0"
 - 支持base64图片上传
 - 支持设定重复文件上传及文件覆盖
 - 支持指定文件名上传及文件覆盖
-- 新增图片处理器上传 （附加于强大的海报生成/图片压缩/水印等）
--
+- 新增图片处理器上传 （附加于强大的海报生成/图片压缩/水印等）新增V3版本
+- 修复文件后缀大小写问题 统一小写
 ```php
     use Shopwwi\WebmanFilesystem\Facade\Storage;
     public function upload(\support\Request $request){

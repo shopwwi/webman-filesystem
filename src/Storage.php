@@ -129,14 +129,15 @@ class Storage
 
         $filesystem = FilesystemFactory::get($this->adapterType,$this->config);
         $storageKey = $this->hash($file->getPathname());
+        $extName = strtolower($file->getUploadExtension());
         if($same){
             $storageKey = $this->hash($file->getPathname()).'_'.uniqid();
         }else{
-            if($filesystem->fileExists(trim($this->path.'/'.$storageKey.'.'.$file->getUploadExtension(), '/'))){
-                $filesystem->delete(trim($this->path.'/'.$storageKey.'.'.$file->getUploadExtension(), '/'));
+            if($filesystem->fileExists(trim($this->path.'/'.$storageKey.'.'.$extName, '/'))){
+                $filesystem->delete(trim($this->path.'/'.$storageKey.'.'.$extName, '/'));
             }
         }
-        $result = $this->putFileAs($this->path, $file, $storageKey.'.'.$file->getUploadExtension());
+        $result = $this->putFileAs($this->path, $file, $storageKey.'.'.$extName);
         if($result){
             $info = [
                 'adapter' => $this->adapterType,
@@ -146,7 +147,7 @@ class Storage
                 'file_url' => $this->url($result),
                 'size' => $file->getSize(),
                 'mime_type' => $file->getUploadMineType(),
-                'extension' => $file->getUploadExtension(),
+                'extension' => $extName,
             ];
             if (\substr($file->getUploadMineType(), 0, 5) == 'image') {
                 $size = \getimagesize($file);
@@ -179,11 +180,12 @@ class Storage
             $keyAndExt = explode('.',substr($fileName,$first + 1,strlen($fileName)));
         }
         $storageKey = $keyAndExt[0] ?? \hash_file('md5', $file->getPathname());
-        $fileName = $path.'/'.$storageKey.'.'.($ext?$keyAndExt[1]:$file->getUploadExtension());
+        $extName = strtolower($ext?$keyAndExt[1]:$file->getUploadExtension());
+        $fileName = $path.'/'.$storageKey.'.'.$extName;
         if($filesystem->fileExists(trim($fileName, '/'))){
             $filesystem->delete($fileName);
         }
-        $result = $this->putFileAs($this->path, $file, $storageKey.'.'.($ext?$keyAndExt[1]:$file->getUploadExtension()));
+        $result = $this->putFileAs($this->path, $file, $storageKey.'.'.$extName);
         if($result) {
             $info = [
                 'origin_name' => $file->getUploadName(),
@@ -192,7 +194,7 @@ class Storage
                 'file_url' => $this->url($result),
                 'size' => $file->getSize(),
                 'mime_type' => $file->getUploadMineType(),
-                'extension' => $file->getUploadExtension(),
+                'extension' => $extName,
             ];
             if (\substr($file->getUploadMineType(), 0, 5) == 'image') {
                 $size = \getimagesize($file);
@@ -255,9 +257,9 @@ class Storage
         if(!empty($this->extNo) &&in_array($size['mime'],$this->extNo)) {
             throw new \Exception('文件类型不被允许'.$size['mime']);
         }
-
+        $extName = strtolower($res[2]);
         $storageKey = md5(uniqid());
-        $fileName = $this->path.'/'.$storageKey.'.'.$res[2];
+        $fileName = $this->path.'/'.$storageKey.'.'.$extName;
         $base_img = str_replace($res[1], '', $baseImg);
         $base_img = str_replace('=','',$base_img);
         $img_len = strlen($base_img);
@@ -278,7 +280,7 @@ class Storage
             'file_url' => $this->url($fileName),
             'size' => $file_size,
             'mime_type' => $size['mime'],
-            'extension' => $res[2],
+            'extension' => $extName,
             'file_height' => $size[1] ?? 0,
             'file_width' => $size[0] ?? 0
         ];
@@ -297,26 +299,33 @@ class Storage
 
         $this->verifyFile($file); // 验证附件
 
-        if (!class_exists(\Intervention\Image\ImageManagerStatic::class)) {
+        if (class_exists(\Intervention\Image\ImageManagerStatic::class) || class_exists(Intervention\Image\ImageManager::class)) {
+
+        }else{
             throw new \Exception('图片处理器未安装');
         }
+        if(class_exists(Intervention\Image\ImageManager::class)){
+            $image = \Intervention\Image\ImageManager::imagick()->read($file);
+        }else{
+            $image = \Intervention\Image\ImageManagerStatic::make($file);
+        }
 
-        $image = \Intervention\Image\ImageManagerStatic::make($file);
         if(is_callable($processFunction)){
             $image = $processFunction($image);
         }
 
         $filesystem = FilesystemFactory::get($this->adapterType,$this->config);
         $storageKey = $this->hash($file->getPathname());
+        $extName = strtolower($file->getUploadExtension());
         if($same){
             $storageKey = $this->hash($file->getPathname()).'_'.uniqid();
         }else{
-            if($filesystem->fileExists(trim($this->path.'/'.$storageKey.'.'.$file->getUploadExtension(), '/'))){
-                $filesystem->delete(trim($this->path.'/'.$storageKey.'.'.$file->getUploadExtension(), '/'));
+            if($filesystem->fileExists(trim($this->path.'/'.$storageKey.'.'.$extName, '/'))){
+                $filesystem->delete(trim($this->path.'/'.$storageKey.'.'.$extName, '/'));
             }
         }
-        $name = $storageKey.'.'.$file->getUploadExtension();
-        $result = $this->put($path = trim($this->path.'/'.$name, '/'), $image->stream());
+        $name = $storageKey.'.'.$extName;
+        $result = $this->put($path = trim($this->path.'/'.$name, '/'),class_exists(Intervention\Image\ImageManager::class)? $image->toPng() : $image->stream());
 
         if($result){
             $info = [
@@ -327,7 +336,7 @@ class Storage
                 'file_url' => $this->url($path),
                 'size' => $image->filesize(),
                 'mime_type' => $file->getUploadMineType(),
-                'extension' => $file->getUploadExtension(),
+                'extension' => $extName,
                 'file_height' => $image->height(),
                 'file_width' => $image->width()
             ];
