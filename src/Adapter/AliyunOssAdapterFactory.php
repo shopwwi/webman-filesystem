@@ -1,27 +1,27 @@
 <?php
 declare(strict_types=1);
 /**
- *-------------------------------------------------------------------------p*
+ *-------------------------------------------------------------------------s*
  * 阿里云OSS
  *-------------------------------------------------------------------------h*
- * @copyright  Copyright (c) 2015-2022 Shopwwi Inc. (http://www.shopwwi.com)
- *-------------------------------------------------------------------------c*
+ * @copyright  Copyright (c) 20 Shopwwi Inc. (http://www.shopwwi.com)
+ *-------------------------------------------------------------------------o*
  * @license    http://www.shopwwi.com        s h o p w w i . c o m
- *-------------------------------------------------------------------------e*
- * @link       http://www.shopwwi.com by 象讯科技 phcent.com
- *-------------------------------------------------------------------------n*
- * @since      shopwwi象讯·PHP商城系统Pro
- *-------------------------------------------------------------------------t*
+ *-------------------------------------------------------------------------p*
+ * @link       http://www.shopwwi.com by 
+ *-------------------------------------------------------------------------w*
+ * @since      shopwwi
+ *-------------------------------------------------------------------------w*
  */
 namespace Shopwwi\WebmanFilesystem\Adapter;
 
 use Shopwwi\WebmanFilesystem\Contract\AdapterFactoryInterface;
-use Shopwwi\FilesystemOss\OssAdapter;
+use Iidestiny\Flysystem\Oss\OssAdapter;
 
 class AliyunOssAdapterFactory implements AdapterFactoryInterface
 {
     public function make(array $options)
     {
-        return new OssAdapter($options);
+        return new OssAdapter($options['accessKey'], $options['secretKey'], $options['endpoint'], $options['bucket'], $options['isCName'], $options['prefix']);
     }
 }

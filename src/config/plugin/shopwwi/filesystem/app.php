@@ -1,17 +1,4 @@
 <?php
-/**
- *-------------------------------------------------------------------------p*
- * 配置文件
- *-------------------------------------------------------------------------h*
- * @copyright  Copyright (c) 2015-2022 Shopwwi Inc. (http://www.shopwwi.com)
- *-------------------------------------------------------------------------c*
- * @license    http://www.shopwwi.com        s h o p w w i . c o m
- *-------------------------------------------------------------------------e*
- * @link       http://www.shopwwi.com by 象讯科技 phcent.com
- *-------------------------------------------------------------------------n*
- * @since      shopwwi象讯·PHP商城系统Pro
- *-------------------------------------------------------------------------t*
- */
 
 return [
     'enable' => true,
@@ -81,10 +68,11 @@ return [
             'accessSecret' => 'OSS_ACCESS_SECRET',
             'bucket' => 'OSS_BUCKET',
             'endpoint' => 'OSS_ENDPOINT',
-            'url' => '' // 静态文件访问域名
+            'url' => '', // 静态文件访问域名
             // 'timeout' => 3600,
             // 'connectTimeout' => 10,
-            // 'isCName' => false,
+            'isCName' => false,
+            'prefix' => '',
             // 'token' => null,
             // 'proxy' => null,
         ],

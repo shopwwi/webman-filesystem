@@ -10,10 +10,16 @@ composer require shopwwi/webman-filesystem
 ```
 ## 使用方法
 
-- 阿里云 OSS 适配器
+- 阿里云 OSS 适配器(php7.X)
 
 ```
-composer require shopwwi/filesystem-oss
+composer require "iidestiny/flysystem-oss:^3"
+```
+
+- 阿里云 OSS 适配器(php8.X)
+
+```
+composer require "iidestiny/flysystem-oss:^4"
 ```
 
 - S3 适配器
