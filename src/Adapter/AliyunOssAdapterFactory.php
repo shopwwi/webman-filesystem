@@ -22,6 +22,6 @@ class AliyunOssAdapterFactory implements AdapterFactoryInterface
 {
     public function make(array $options)
     {
-        return new OssAdapter($options['accessKey'], $options['secretKey'], $options['endpoint'], $options['bucket'], $options['isCName'], $options['prefix']);
+        return new OssAdapter($options['accessId'], $options['accessSecret'], $options['endpoint'], $options['bucket'], $options['isCName'], $options['prefix']);
     }
 }
